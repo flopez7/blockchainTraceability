@@ -1,0 +1,151 @@
+<form action="">
+  <br>
+  <h2 #goUp class="text-center">Edit item {{item.id}}</h2>
+  <hr>
+  <div class="form-group">
+    <label>Name</label>
+    <div class="row">
+      <hr>
+      <div class="col-sm-11">
+        <input type="text" class="form-control" value="{{item.name}}" name="name" [(ngModel)]="item.name">
+      </div>
+      <div class="col-sm-1 text-center">
+        <button type="submit" class="btn btn-outline-success" (click)="onUpdateName(item.id, item.name)"><i class="fa fa-save"></i></button>
+      </div>
+    </div>
+    
+    <label>Source</label>
+    <div class="row">
+      <hr>
+      <div class="col-sm-11">
+        <input type="text" class="form-control" value="{{item.source}}" name="source" [(ngModel)]="item.source">
+      </div>
+      <div class="col-sm-1 text-center">
+        <button type="submit" class="btn btn-outline-success" (click)="onUpdateSource(item.id, item.source)"><i class="fa fa-save"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <h4 class="text-center">Locations</h4>
+  <hr>
+  <div class="form-group">
+    <div class="row">
+      <hr>
+      <div class="col-sm-1">
+        <label>Id</label>
+      </div>
+      <div class="col-sm-3">
+        <label>Place</label>
+      </div>
+      <div class="col-sm-3">
+        <label>Datetime</label>
+      </div>
+      <div class="col-sm-4">
+        <label>Description</label>
+      </div>
+      <div class="col-sm-1">
+        <label>Options</label>
+      </div>
+    </div>
+    
+    <div *ngFor="let location of item.locations; let i = index" style="margin-bottom: 10px;">
+      <div class="row">
+        <div class="col-sm-1">
+          <span>{{i}}</span>
+        </div>
+        <div class="col-sm-3">
+          <input type="text" class="form-control" value="{{location.place}}" name="{{'place'+i}}" [(ngModel)]="location.place">
+        </div>
+        <div class="col-sm-3">
+          <input type="text" class="form-control" value="{{location.datetime}}" name="{{'datetime'+i}}" [(ngModel)]="location.datetime" readonly>
+        </div>
+        <div class="col-sm-4">
+          <textarea rows="1" class="form-control" value="{{location.description}}" name="{{'description'+i}}" [(ngModel)]="location.description"></textarea>
+        </div>
+        <div class="col-sm-1 text-center">
+          <button type="submit" class="btn btn-outline-success" (click)="onUpdateLocation(item.id, i, location.place, location.description)"><i class="fa fa-save"></i></button>
+        </div>
+      </div>
+    </div>
+
+    
+  </div>
+
+  <ng-template #mymodal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add new location</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" style="padding: 20px;">
+      <div class="row text-center">
+        <div class="col">
+          <div class="row">
+            <label>Place</label>
+            <input type="text" class="form-control" name="{{'newPlace'}}" [(ngModel)]="newPlace">
+          </div>
+          <br>
+          <div class="row">
+            <label>Description</label>
+            <textarea rows="2" type="text" class="form-control" name="{{'newDescription'}}" [(ngModel)]="newDescription"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-success" (click)="modal.close('Save click'); onAddLocation(item.id, newPlace, newDescription)">Save</button>
+    </div>
+  </ng-template>
+
+  <br>
+  <div class="row text-center" style="margin-bottom: 30px;">
+    <div class="col-sm-4" style="margin-bottom: 10px;">
+      <button class="btn btn-outline-danger" (click)="onDeleteLocation(item.id)">Delete last location</button>      
+    </div>
+    <div class="col-sm-4" style="margin-bottom: 10px;">
+      <button class="btn btn-outline-primary" (click)="open(mymodal)">Add location</button>
+    </div>
+    <div class="col-sm-4" style="margin-bottom: 10px;">
+      <button type="cancel" class="btn btn-outline-danger" [routerLink]="['/']">Cancel</button>
+    </div>
+  </div>
+
+  <br>
+  <h4 class="text-center">Connections </h4>
+  <hr>
+  
+  <div class="row">
+    <div class="col-sm-6">
+      <h5 class="text-center">Source</h5>
+      <div class="row">
+        <a [href]="['/editItem/'+source.id]" style="width: 100%; margin: 2%;">
+          <div *ngIf="source.name.length>0" class="card">
+            <div class="card-body" [routerLink]="['/editItem/'+source.id]">
+              <h5 class="card-title">{{source.name}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{source.id}}</h6>
+              <p class="card-text">{{source.locations[source.locations.length-1].place}} - {{source.locations[source.locations.length-1].datetime}}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <h5 class="text-center">Derived</h5>
+      <div 
+        *ngFor="let derivedItem of derived"
+        class="row">
+        <a [href]="['/editItem/'+derivedItem.id]" style="width: 100%; margin: 2%;">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{derivedItem.name}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{derivedItem.id}}</h6>
+              <p class="card-text">{{derivedItem.locations[derivedItem.locations.length-1].place}} - {{derivedItem.locations[derivedItem.locations.length-1].datetime}}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

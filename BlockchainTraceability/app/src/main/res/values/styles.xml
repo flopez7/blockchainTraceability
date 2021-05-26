@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="titleStyle" parent="@style/Base.TextAppearance.AppCompat.Title">
+        <item name="android:textSize">22dp</item>
+    </style>
+</resources>

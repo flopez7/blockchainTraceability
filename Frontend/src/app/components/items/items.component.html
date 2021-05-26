@@ -1,0 +1,18 @@
+<div class="table">
+  <br>
+  <h2 class="text-center">Items list</h2>
+  <hr>
+  <div class="row">
+    <div class="col-sm-1"><h6>Id</h6></div>
+    <div class="col-sm-3"><h6>Name</h6></div>
+    <div class="col-sm-3"><h6>Last place</h6></div>
+    <div class="col-sm-3"><h6>Last time</h6></div>
+    <div class="col-sm-2"><h6>Options</h6></div>
+  </div>
+  <hr/>
+  <app-item 
+    *ngFor="let item of items"          
+    [item]="item" 
+    (deleteItem)="deleteItem($event)">
+  </app-item>
+</div>
