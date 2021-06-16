@@ -6,6 +6,7 @@ contract Users{
     {
         string Name;
         string Surname;
+        string Email;
         string Password;
     }
     
@@ -17,19 +18,39 @@ contract Users{
     
     modifier isInList(string calldata _userId) 
     {
-        require(length(users[_userId].Name) > 0, "Item not found");
+        require(length(users[_userId].Email) > 0, "Item not found");
         _;
     }
     
-    function setUser(string calldata _userId, string calldata _name, string calldata _surname, string calldata _password) external
+    modifier isNotInList(string calldata _userId) 
+    {
+        require(length(users[_userId].Email) <= 0, "Item found");
+        _;
+    }
+
+    function setUser(string calldata _userId, string calldata _name, string calldata _surname, string calldata _email, string calldata _password) external isNotInList(_userId)
     {
         users[_userId].Name = _name;
         users[_userId].Surname = _surname;
+        users[_userId].Email = _email;
+        users[_userId].Password = _password;
+    }
+    
+    function updateUser(string calldata _userId, string calldata _name, string calldata _surname, string calldata _email, string calldata _password) external isInList(_userId)
+    {
+        users[_userId].Name = _name;
+        users[_userId].Surname = _surname;
+        users[_userId].Email = _email;
         users[_userId].Password = _password;
     }
     
     function checkPassword(string calldata _userId, string calldata _password) external view isInList(_userId) returns (bool){
         return compareStrings(users[_userId].Password, _password);
+    }
+    
+    function deleteUser(string calldata _userId) external isInList(_userId) 
+    {
+        delete users[_userId];
     }
     
     // String manipulation functions

@@ -2,8 +2,8 @@ from datetime import datetime
 from solcx import compile_source
 import json
 
-BLOCKCHAIN_TYPE = "GANACHE"
-#BLOCKCHAIN_TYPE = "INFURA"
+#BLOCKCHAIN_TYPE = "GANACHE"
+BLOCKCHAIN_TYPE = "INFURA"
 
 private_key = 'a2353cf143ee9af9686aba2dcef35ce765014bbaced70d4947dce7acdca3b5db'
 

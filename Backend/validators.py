@@ -24,3 +24,14 @@ class UpdateLocationSchema(Schema):
 class SourceSchema(Schema):
     id = fields.Int(required=True)
     source = fields.Int(required=True)
+
+class UserSchema(Schema):
+    id = fields.String(required=True)
+    name = fields.String(required=True)
+    surname = fields.String(required=True)
+    email = fields.String(required=True)
+    password = fields.String(required=True)
+
+class PasswordSchema(Schema):
+    id = fields.String(required=True)
+    password = fields.String(required=True)

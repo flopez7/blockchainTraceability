@@ -1,20 +1,21 @@
 from flask import Flask, Response, request, jsonify
 from marshmallow import ValidationError
+from marshmallow.fields import String
 from web3 import Web3
 from web3.exceptions import ContractLogicError, BadFunctionCallOutput
 from flask_cors import CORS
 import functions
 import validators
 
-BLOCKCHAIN_TYPE = "GANACHE"
-#BLOCKCHAIN_TYPE = "INFURA"
+#BLOCKCHAIN_TYPE = "GANACHE"
+BLOCKCHAIN_TYPE = "INFURA"
 
 # web3.py instance
 if(BLOCKCHAIN_TYPE == 'GANACHE'):
     w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
     w3.eth.defaultAccount = w3.eth.accounts[1]
 else:
-    w3 = Web3(Web3.HTTPProvider("https://kovan.infura.io/v3/36d5f0ab413f4b4e9c6806a4f1dc2ded"))
+    w3 = Web3(Web3.HTTPProvider("https://ropsten.infura.io/v3/36d5f0ab413f4b4e9c6806a4f1dc2ded"))
     w3.eth.defaultAccount = '0xC1f8919336F2ac39009d10A92AF3447817B211c9'
     private_key = 'a2353cf143ee9af9686aba2dcef35ce765014bbaced70d4947dce7acdca3b5db'
 
@@ -66,7 +67,6 @@ def setItem():
 def setLocation():
     # Create the contract instance with the newly-deployed address
     body = request.get_json()
-    print(body)
     try:
         result = validators.LocationSchema().load(body)
     except ValidationError as err:
@@ -213,7 +213,7 @@ def getItems():
         item_data = contract.functions.getAllItems().call()
         return jsonify(functions.parseAllItems(item_data)), 200
     except ContractLogicError as err:
-        return jsonify({"error": str(err).split(': revert')[-1]}), 422
+        return jsonify({"error": str(err).split(': ')[-1]}), 422
     except ValueError as err:
         return jsonify({"error": err.args[0]['message']}), 422
     except BadFunctionCallOutput as err:
@@ -356,6 +356,116 @@ def deleteLastLocation():
     except BadFunctionCallOutput as err:
         return jsonify({"error": str(err)}), 422
     
+
+@app.route("/user/setUser", methods=['POST'])
+def setUser():
+    body = request.get_json()
+    try:
+        result = validators.UserSchema().load(body)
+    except ValidationError as err:
+        return jsonify(**(err.valid_data),**(err.messages)), 422
+
+    try:
+        if(BLOCKCHAIN_TYPE == 'GANACHE'):
+            tx_hash = users.functions.setUser(
+                result['id'],result['name'],result['surname'],result['email'],result['password']
+            ).transact()
+        else:
+            nonce = w3.eth.get_transaction_count(w3.eth.defaultAccount)
+            tx = users.functions.setUser(
+                result['id'],result['name'],result['surname'],result['email'],result['password']
+            ).buildTransaction({
+                'nonce': nonce,
+            })
+            signed_txn = w3.eth.account.sign_transaction(tx, private_key=private_key)
+            tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        
+        # Wait for transaction to be mined...
+        w3.eth.waitForTransactionReceipt(tx_hash)
+        return jsonify({"result": "Succesfull"}), 200
+    except ContractLogicError as err:
+        return jsonify({"error": str(err).split(': ')[-1]}), 422
+    except ValueError as err:
+        return jsonify({"error": err.args[0]['message']}), 422
+    except BadFunctionCallOutput as err:
+        return jsonify({"error": str(err)}), 422
+        
+@app.route("/user/checkPassword", methods=['POST'])
+def checkPassword():
+    body = request.get_json()
+    try:
+        result = validators.PasswordSchema().load(body)
+    except ValidationError as err:
+        return jsonify(**(err.valid_data),**(err.messages)), 422
+    
+    try:
+        if(users.functions.checkPassword(result['id'],result['password']).call()):
+            return jsonify({"result": "true"}), 200
+        else:
+            return jsonify({"result": "false"}), 200
+    except ContractLogicError as err:
+        return jsonify({"error": str(err).split(': ')[-1]}), 422
+    except ValueError as err:
+        return jsonify({"error": err.args[0]['message']}), 422
+    except BadFunctionCallOutput as err:
+        return jsonify({"error": str(err)}), 422
+
+@app.route("/user/updateUser", methods=['PUT'])
+def updateUser():
+    body = request.get_json()
+    try:
+        result = validators.UserSchema().load(body)
+    except ValidationError as err:
+        return jsonify(**(err.valid_data),**(err.messages)), 422
+
+    try:
+        if(BLOCKCHAIN_TYPE == 'GANACHE'):
+            tx_hash = users.functions.updateUser(
+                result['id'],result['name'],result['surname'],result['email'],result['password']
+            ).transact()
+        else:
+            nonce = w3.eth.get_transaction_count(w3.eth.defaultAccount)
+            tx = users.functions.updateUser(
+                result['id'],result['name'],result['surname'],result['email'],result['password']
+            ).buildTransaction({
+                'nonce': nonce,
+            })
+            signed_txn = w3.eth.account.sign_transaction(tx, private_key=private_key)
+            tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        
+        # Wait for transaction to be mined...
+        w3.eth.waitForTransactionReceipt(tx_hash)
+        return jsonify({"result": "Succesfull"}), 200
+    except ContractLogicError as err:
+        return jsonify({"error": str(err).split(': ')[-1]}), 422
+    except ValueError as err:
+        return jsonify({"error": err.args[0]['message']}), 422
+    except BadFunctionCallOutput as err:
+        return jsonify({"error": str(err)}), 422
+
+@app.route("/user/deleteUser", methods=['DELETE'])
+def deleteUser():
+    id = request.args['id']
+    try:
+        if(BLOCKCHAIN_TYPE == 'GANACHE'):
+            tx_hash = users.functions.deleteUser(id).transact()
+        else:
+            nonce = w3.eth.get_transaction_count(w3.eth.defaultAccount)
+            tx = users.functions.deleteUser(id).buildTransaction({
+                'nonce': nonce,
+            })
+            signed_txn = w3.eth.account.sign_transaction(tx, private_key=private_key)
+            tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        
+        # Wait for transaction to be mined...
+        w3.eth.waitForTransactionReceipt(tx_hash)
+        return jsonify({"result": "Succesfull"}), 200
+    except ContractLogicError as err:
+        return jsonify({"error": str(err).split(': ')[-1]}), 422
+    except ValueError as err:
+        return jsonify({"error": err.args[0]['message']}), 422
+    except BadFunctionCallOutput as err:
+        return jsonify({"error": str(err)}), 422
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000
