@@ -443,6 +443,21 @@ def updateUser():
     except BadFunctionCallOutput as err:
         return jsonify({"error": str(err)}), 422
 
+
+@app.route("/user/getUser", methods=['GET'])
+def getUser():
+    id = request.args['id']
+    print(id)
+    try:
+        user_data = users.functions.users(id).call()
+        return jsonify(functions.parseUser(user_data,id)), 200
+    except ContractLogicError as err:
+        return jsonify({"error": str(err).split(': ')[-1]}), 422
+    except ValueError as err:
+        return jsonify({"error": err.args[0]['message']}), 422
+    except BadFunctionCallOutput as err:
+        return jsonify({"error": str(err)}), 422
+
 @app.route("/user/deleteUser", methods=['DELETE'])
 def deleteUser():
     id = request.args['id']

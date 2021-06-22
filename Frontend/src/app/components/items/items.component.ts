@@ -34,6 +34,7 @@ export class ItemsComponent implements OnInit {
   }
 
   deleteItem(item : Item){
+    window.scroll(0,0);
     this.SpinnerService.show(); 
     this.apiService.deleteItem(item.id).subscribe(
       data => {

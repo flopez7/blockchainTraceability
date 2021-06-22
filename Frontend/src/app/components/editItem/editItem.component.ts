@@ -39,7 +39,7 @@ export class EditItemComponent implements OnInit {
       //this.router.navigate(['/']);
     }
     this.SpinnerService.show();
-    this.apiService.getItem(+this.id).subscribe(
+    this.apiService.getItem(this.id).subscribe(
       data => {
         this.item = data;
         this.apiService.getSource(+this.id).subscribe(

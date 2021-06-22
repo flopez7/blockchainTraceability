@@ -18,13 +18,13 @@ contract Users{
     
     modifier isInList(string calldata _userId) 
     {
-        require(length(users[_userId].Email) > 0, "Item not found");
+        require(length(users[_userId].Email) > 0, "User not found");
         _;
     }
     
     modifier isNotInList(string calldata _userId) 
     {
-        require(length(users[_userId].Email) <= 0, "Item found");
+        require(length(users[_userId].Email) <= 0, "User found");
         _;
     }
 

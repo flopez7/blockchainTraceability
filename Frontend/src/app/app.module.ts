@@ -9,12 +9,15 @@ import { ItemsComponent } from './components/items/items.component'
 import { ItemComponent } from './components/item/item.component'
 import { AddItemComponent } from './components/addItem/addItem.component'
 import { EditItemComponent } from './components/editItem/editItem.component'
+import { LoginComponent } from './components/login/login.component'
+import { RegisterComponent } from './components/register/register.component';
 import { FormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [	
@@ -24,6 +27,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ItemComponent,
     AddItemComponent,
     EditItemComponent,
+    LoginComponent,
+    RegisterComponent,
    ],
   imports: [
     CommonModule,
@@ -37,7 +42,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgxQRCodeModule,
     NgbModule,
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })

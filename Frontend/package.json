@@ -25,6 +25,7 @@
     "bootstrap": "^4.6.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
+    "ngx-cookie-service": "^12.0.0",
     "ngx-spinner": "^6.1.2",
     "ngx-toastr": "^13.2.1",
     "rxjs": "~6.6.0",

@@ -71,6 +71,15 @@ def parseAllLocations(items):
         parsed['locations'].append(location)
     return parsed
 
+def parseUser (user, id): 
+    parsed = {}
+    parsed['id'] = id
+    parsed['name'] = user[0]
+    parsed['surname'] = user[1]
+    parsed['email'] = user[2]
+    parsed['password'] = user[3]
+    return parsed
+
 #Compilar el smart contract
 def compileSourceFile(file_path):
     with open(file_path, 'r') as f:

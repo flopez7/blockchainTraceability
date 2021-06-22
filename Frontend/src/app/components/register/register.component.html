@@ -1,0 +1,65 @@
+<div class="card" style="margin-top: 2%;">
+    <div class="card-body">
+      <form action="">
+        <br>
+        <h2 *ngIf="register" class="card-title text-center">Register</h2>
+        <h2 *ngIf="!register" class="card-title text-center">Edit user</h2>
+        <hr>
+  
+        <div class="form-group">
+          <label for="">Username</label>
+          <input *ngIf="register" type="text" class="form-control" name="username" [(ngModel)]="user.id">
+          <input *ngIf="!register" type="text" class="form-control" name="username" [(ngModel)]="user.id" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="">Name</label>
+            <input type="text" class="form-control" name="name" [(ngModel)]="user.name">
+        </div>
+
+        <div class="form-group">
+            <label for="">Surname</label>
+            <input type="text" class="form-control" name="surname" [(ngModel)]="user.surname">
+        </div>
+
+        <div class="form-group">
+            <label for="">Email</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="user.email">
+        </div>
+  
+        <div class="form-group">
+          <label for="">Password</label>
+          <input type="password" class="form-control" name="password" [(ngModel)]="password">
+        </div>
+
+        
+        <div class="form-group">
+            <label for="">Repeat password</label>
+            <input type="password" class="form-control" name="password2" [(ngModel)]="password2">
+          </div>
+  
+        <br>
+        <div class="text-center" style="margin-bottom: 30px;">
+          <button *ngIf="register" type="submit" class="btn btn-success" (click)="onSubmit()" [disabled]="password != password2 
+            || password == '' 
+            || password.length < 8
+            || user.id == ''
+            || user.name== ''
+            || user.surname == ''
+            || user.email== ''
+          ">Register</button>
+          <button *ngIf="!register" type="submit" class="btn btn-success" (click)="onSubmit()" [disabled]="(password != password2 
+            || password == '' 
+            || password.length < 8) 
+            && (user.id == ''
+            || user.name== ''
+            || user.surname == ''
+            || user.email== '')
+          ">Save</button>
+          <button type="cancel" class="btn btn-danger" [routerLink]="['/']"  style="margin-left: 10px;">Cancel</button>
+          <button *ngIf="!register" type="cancel" class="btn btn-danger" (click)="deleteUser()"  style="margin-left: 10px;">Delete</button>
+        </div>
+  
+      </form>
+    </div>
+  </div>
