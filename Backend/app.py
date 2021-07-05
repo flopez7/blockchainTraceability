@@ -33,7 +33,6 @@ def token_required(f):
     def decorator(*args, **kwargs):
 
         token = None
-        print(request.headers)
         if 'Authorization' in request.headers:
             token = request.headers['Authorization'].split('Bearer ')[-1]
         if not token:
