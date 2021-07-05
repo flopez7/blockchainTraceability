@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Item } from '../models/item';
 
 
@@ -10,12 +10,6 @@ import { Item } from '../models/item';
 export class ApiService {
 
   url: string = 'http://localhost:5000/blockchain/'
-  httpOptions = {
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  };
-
   constructor(
     private httpClient: HttpClient,
     ) { }
@@ -42,7 +36,7 @@ export class ApiService {
       place: place,
       description: description
     }
-    return this.httpClient.post<Item>(this.url+'setItem', item, this.httpOptions);
+    return this.httpClient.post<Item>(this.url+'setItem', item);
   }
 
   addLocation(id:number, place:string, description:string):Observable<Item>{
@@ -51,7 +45,7 @@ export class ApiService {
       place: place,
       description: description
     }
-    return this.httpClient.post<Item>(this.url+'setLocation', item, this.httpOptions);
+    return this.httpClient.post<Item>(this.url+'setLocation', item);
   }
 
   updateItemName(id:number, name:string):Observable<Item>{
@@ -59,7 +53,7 @@ export class ApiService {
       id: id,
       name: name,
     }
-    return this.httpClient.put<Item>(this.url+'updateItemName', item, this.httpOptions);
+    return this.httpClient.put<Item>(this.url+'updateItemName', item);
   }
 
   updateItemSource(id:number, source:number):Observable<Item>{
@@ -67,7 +61,7 @@ export class ApiService {
       id: id,
       source: source,
     }
-    return this.httpClient.post<Item>(this.url+'setSource', item, this.httpOptions);
+    return this.httpClient.post<Item>(this.url+'setSource', item);
   }
 
   updateItemLocation(id:number, position:number, place:string, description:string):Observable<Item>{
@@ -77,7 +71,7 @@ export class ApiService {
       place: place,
       description: description
     }
-    return this.httpClient.put<Item>(this.url+'updateLocation', item, this.httpOptions);
+    return this.httpClient.put<Item>(this.url+'updateLocation', item);
   }
 
   deleteItem(id:number):Observable<Item[]>{

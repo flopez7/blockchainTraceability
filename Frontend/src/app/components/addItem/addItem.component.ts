@@ -26,6 +26,7 @@ export class AddItemComponent implements OnInit {
   }
 
   onSubmit(){
+    window.scroll(0,0);
     this.SpinnerService.show(); 
     this.apiService.addItem(this.name,this.place,this.description).subscribe(
       data => {      

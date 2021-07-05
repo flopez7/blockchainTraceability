@@ -9,15 +9,17 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
-  status: boolean = this.cookieService.check("userId");
-  userId: string = this.cookieService.get("userId");
+  status: boolean = this.cookieService.check("token");
+  userId: string = "";
 
   constructor(private cookieService: CookieService, private router: Router) { }
 
   ngOnInit(): void {
+    this.userId = this.cookieService.get("userId");
   }
 
   logout(){
+    this.cookieService.delete("token");
     this.cookieService.delete("userId");
     window.location.reload()
   }

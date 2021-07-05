@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if(this.cookieService.check('userId')){
+    if(this.cookieService.check('token')){
       this.router.navigate(['/']);
     }
   }
@@ -38,6 +38,7 @@ export class LoginComponent implements OnInit {
           this.toastr.success('Login succesfull', 'Successfull!');
           this.router.navigate(['/']);
           window.location.reload()
+          this.cookieService.set('token', data.token, 1, '/');
           this.cookieService.set('userId', this.username, 1, '/');
         }else{
           this.toastr.error('Incorrect password', 'Error!');

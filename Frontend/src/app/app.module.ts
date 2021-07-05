@@ -18,6 +18,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CookieService } from 'ngx-cookie-service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './auth/token.interceptor';
 
 @NgModule({
   declarations: [	
@@ -42,7 +44,14 @@ import { CookieService } from 'ngx-cookie-service';
     NgxQRCodeModule,
     NgbModule,
   ],
-  providers: [CookieService],
+  providers: [
+    CookieService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })

@@ -44,8 +44,8 @@ contract Users{
         users[_userId].Password = _password;
     }
     
-    function checkPassword(string calldata _userId, string calldata _password) external view isInList(_userId) returns (bool){
-        return compareStrings(users[_userId].Password, _password);
+    function getPassword(string calldata _userId) external view isInList(_userId) returns (string memory){
+        return users[_userId].Password;
     }
     
     function deleteUser(string calldata _userId) external isInList(_userId) 
@@ -57,9 +57,5 @@ contract Users{
     function length(string memory str) internal pure returns (uint256) 
     {
         return bytes(str).length;
-    }
-    
-    function compareStrings(string memory a, string memory b) internal pure returns (bool) {
-        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
 }

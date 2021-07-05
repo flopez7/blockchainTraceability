@@ -8,12 +8,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthService {
 
-  url: string = 'http://localhost:5000/user/'
-  httpOptions = {
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  };
+  url: string = 'http://localhost:5000/user/';
 
   constructor(
     private httpClient: HttpClient,
@@ -24,11 +19,11 @@ export class AuthService {
       id: userId,
       password: password,
     }
-    return this.httpClient.post<any>(this.url+'checkPassword', model, this.httpOptions);
+    return this.httpClient.post<any>(this.url+'login', model);
   }
 
   register(user:User):Observable<any>{
-    return this.httpClient.post<any>(this.url+'setUser', user, this.httpOptions);
+    return this.httpClient.post<any>(this.url+'setUser', user);
   }
 
   getUser(id:string):Observable<any>{
@@ -36,7 +31,7 @@ export class AuthService {
   }
 
   updateUser(user:User):Observable<User>{
-    return this.httpClient.put<User>(this.url+'updateUser', user, this.httpOptions);
+    return this.httpClient.put<User>(this.url+'updateUser', user);
   }
 
   deleteUser(id:string):Observable<any>{

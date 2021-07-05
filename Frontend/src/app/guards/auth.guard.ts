@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    const cookie = this.cookieService.check('userId');
+    const cookie = this.cookieService.check('token');
     this.redirect(cookie);
     return cookie;
   }

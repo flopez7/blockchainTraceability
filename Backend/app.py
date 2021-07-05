@@ -1,11 +1,14 @@
-from flask import Flask, Response, request, jsonify
+from flask import Flask, request, jsonify
 from marshmallow import ValidationError
-from marshmallow.fields import String
 from web3 import Web3
 from web3.exceptions import ContractLogicError, BadFunctionCallOutput
 from flask_cors import CORS
+from datetime import datetime, timedelta
 import functions
 import validators
+import jwt
+from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
 
 #BLOCKCHAIN_TYPE = "GANACHE"
 BLOCKCHAIN_TYPE = "INFURA"
@@ -23,9 +26,33 @@ contract, users = functions.get_contracts(w3)
 
 # Initializing flask app
 app = Flask(__name__)
+app.config['SECRET_KEY']='Th1s1ss3cr3t'
 CORS(app)
-# api to set new user every api call
+def token_required(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+
+        token = None
+        print(request.headers)
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split('Bearer ')[-1]
+        if not token:
+            return jsonify({'error': 'login required'}), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms="HS256")
+            current_user = users.functions.users(data['userId']).call()
+            if(current_user[0] != ''):
+                return f(*args, **kwargs)
+            else:
+                return jsonify({'error': 'token is invalid'}), 401
+        except:
+            return jsonify({'error': 'token is invalid'}), 401
+
+    return decorator
+
 @app.route("/blockchain/setItem", methods=['POST'])
+@token_required
 def setItem():
     # Create the contract instance with the newly-deployed address
     
@@ -99,6 +126,7 @@ def setLocation():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/blockchain/setSource", methods=['POST'])
+@token_required
 def setSource():
     # Create the contract instance with the newly-deployed address
     
@@ -135,6 +163,7 @@ def setSource():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/blockchain/updateItemName", methods=['PUT'])
+@token_required
 def updateItemName():
     # Create the contract instance with the newly-deployed address
     
@@ -171,6 +200,7 @@ def updateItemName():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/blockchain/updateLocation", methods=['PUT'])
+@token_required
 def updateLocation():
     # Create the contract instance with the newly-deployed address
     
@@ -207,8 +237,8 @@ def updateLocation():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/blockchain/getItems", methods=['GET'])
+@token_required
 def getItems():
-    
     try:
         item_data = contract.functions.getAllItems().call()
         return jsonify(functions.parseAllItems(item_data)), 200
@@ -305,6 +335,7 @@ def getDerived():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/blockchain/deleteItem", methods=['DELETE'])
+@token_required
 def deleteItem():
     id = int(request.args['id'])
 
@@ -331,6 +362,7 @@ def deleteItem():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/blockchain/deleteLastLocation", methods=['DELETE'])
+@token_required
 def deleteLastLocation():
     id = int(request.args['id'])
 
@@ -358,6 +390,7 @@ def deleteLastLocation():
     
 
 @app.route("/user/setUser", methods=['POST'])
+@token_required
 def setUser():
     body = request.get_json()
     try:
@@ -368,12 +401,12 @@ def setUser():
     try:
         if(BLOCKCHAIN_TYPE == 'GANACHE'):
             tx_hash = users.functions.setUser(
-                result['id'],result['name'],result['surname'],result['email'],result['password']
+                result['id'],result['name'],result['surname'],result['email'],generate_password_hash(result['password'], method='sha256')
             ).transact()
         else:
             nonce = w3.eth.get_transaction_count(w3.eth.defaultAccount)
             tx = users.functions.setUser(
-                result['id'],result['name'],result['surname'],result['email'],result['password']
+                result['id'],result['name'],result['surname'],result['email'],generate_password_hash(result['password'], method='sha256')
             ).buildTransaction({
                 'nonce': nonce,
             })
@@ -390,17 +423,18 @@ def setUser():
     except BadFunctionCallOutput as err:
         return jsonify({"error": str(err)}), 422
         
-@app.route("/user/checkPassword", methods=['POST'])
-def checkPassword():
+@app.route("/user/login", methods=['POST'])
+def login():
     body = request.get_json()
     try:
         result = validators.PasswordSchema().load(body)
     except ValidationError as err:
         return jsonify(**(err.valid_data),**(err.messages)), 422
-    
     try:
-        if(users.functions.checkPassword(result['id'],result['password']).call()):
-            return jsonify({"result": "true"}), 200
+        pwd_hash = users.functions.getPassword(result['id']).call()
+        if(check_password_hash(pwd_hash, result['password'])):
+            token = jwt.encode({'userId': result['id'], 'exp' : datetime.utcnow() + timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
+            return jsonify({"result": "true", "token": token}), 200
         else:
             return jsonify({"result": "false"}), 200
     except ContractLogicError as err:
@@ -411,6 +445,7 @@ def checkPassword():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/user/updateUser", methods=['PUT'])
+@token_required
 def updateUser():
     body = request.get_json()
     try:
@@ -421,12 +456,12 @@ def updateUser():
     try:
         if(BLOCKCHAIN_TYPE == 'GANACHE'):
             tx_hash = users.functions.updateUser(
-                result['id'],result['name'],result['surname'],result['email'],result['password']
+                result['id'],result['name'],result['surname'],result['email'],generate_password_hash(result['password'], method='sha256')
             ).transact()
         else:
             nonce = w3.eth.get_transaction_count(w3.eth.defaultAccount)
             tx = users.functions.updateUser(
-                result['id'],result['name'],result['surname'],result['email'],result['password']
+                result['id'],result['name'],result['surname'],result['email'],generate_password_hash(result['password'], method='sha256')
             ).buildTransaction({
                 'nonce': nonce,
             })
@@ -445,6 +480,7 @@ def updateUser():
 
 
 @app.route("/user/getUser", methods=['GET'])
+@token_required
 def getUser():
     id = request.args['id']
     print(id)
@@ -459,6 +495,7 @@ def getUser():
         return jsonify({"error": str(err)}), 422
 
 @app.route("/user/deleteUser", methods=['DELETE'])
+@token_required
 def deleteUser():
     id = request.args['id']
     try:
