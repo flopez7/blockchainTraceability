@@ -45,7 +45,7 @@ contract Traceability
         next_id++;
     }
     
-    function setSource(uint256 _id, uint256 _source) external isInList(_id)
+    function setSource(uint256 _id, uint256 _source) external isInList(_id) isInList(_source)
     {
         items[_id].source = _source;
     }

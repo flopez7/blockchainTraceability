@@ -38,8 +38,10 @@ export class LoginComponent implements OnInit {
           this.toastr.success('Login succesfull', 'Successfull!');
           this.router.navigate(['/']);
           window.location.reload()
-          this.cookieService.set('token', data.token, 1, '/');
-          this.cookieService.set('userId', this.username, 1, '/');
+          const dateNow = new Date();
+          dateNow.setMinutes(dateNow.getMinutes() + 30);
+          this.cookieService.set('token', data.token, dateNow, '/');
+          this.cookieService.set('userId', this.username, dateNow, '/');
         }else{
           this.toastr.error('Incorrect password', 'Error!');
         }
