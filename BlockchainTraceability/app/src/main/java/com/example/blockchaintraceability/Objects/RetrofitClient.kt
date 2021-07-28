@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL : String = "https://97517997b82e.ngrok.io/blockchain/"
+    private const val BASE_URL : String = "https://78dc22d267f1.ngrok.io/blockchain/"
     private val loggin = HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor() { chain ->

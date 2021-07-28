@@ -30,12 +30,14 @@
           <ngx-qrcode
             [elementType] = "elementType"
             [value] = "item.id.toString()"
-            [errorCorrectionLevel] = "errorCorrectionLevel">
+            [errorCorrectionLevel] = "errorCorrectionLevel"
+            cssClass="QRCode">
           </ngx-qrcode>
         </div>
       </div>
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn btn-outline-warning white-color" (click)="downloadQRCode()">Download</button>
       <button type="button" class="btn btn-outline-success" (click)="modal.close('Save click')">Ok</button>
     </div>
   </ng-template>

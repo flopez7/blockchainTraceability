@@ -52,4 +52,23 @@ export class ItemComponent implements OnInit {
     }
   }
 
+  downloadQRCode() {
+    const fileNameToDownload = 'qrcode_' + this.item.id;
+    const base64Img = document.getElementsByClassName('QRCode')[0].children[0].attributes[0].value;
+    fetch(base64Img)
+      .then(res => res.blob())
+      .then((blob) => {
+        // IE
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(blob, fileNameToDownload);
+        } else { // Chrome
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileNameToDownload;
+          link.click();
+        }
+      })
+  }
+
 }
