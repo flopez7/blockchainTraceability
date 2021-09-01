@@ -35,17 +35,20 @@ export class ItemsComponent implements OnInit {
 
   deleteItem(item : Item){
     window.scroll(0,0);
-    this.SpinnerService.show(); 
-    this.apiService.deleteItem(item.id).subscribe(
-      data => {
-        this.items = data;
-        this.SpinnerService.hide();
-      },
-      error => {
-        this.toastr.error(error.message, 'Error!');
-        this.SpinnerService.hide();
-      }
-    );
+    if(confirm("Are you sure you want to delete " + item.name + "?")){
+      this.SpinnerService.show();
+      this.apiService.deleteItem(item.id).subscribe(
+        data => {
+          this.items = data;
+          this.SpinnerService.hide();
+        },
+        error => {
+          this.toastr.error(error.message, 'Error!');
+          this.SpinnerService.hide();
+        }
+      );
+    }
+    
   }
 
 }
